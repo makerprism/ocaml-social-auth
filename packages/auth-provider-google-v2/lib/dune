@@ -1,8 +1,0 @@
-(library
- (name auth_provider_google_v2)
- (public_name auth-provider-google-v2)
- (wrapped true)
- (modules auth_provider_google_v2)
- (libraries
-  auth-provider-core
-  yojson))

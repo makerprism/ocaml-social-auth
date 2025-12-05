@@ -1,0 +1,8 @@
+(library
+ (name social_auth_github_v2)
+ (public_name social-auth-github-v2)
+ (wrapped true)
+ (modules social_auth_github_v2)
+ (libraries
+  social-auth-core
+  yojson))

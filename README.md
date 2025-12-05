@@ -15,11 +15,11 @@ Runtime-agnostic OAuth 2.0 authentication libraries for OCaml. Supports GitHub, 
 
 | Package | Description |
 |---------|-------------|
-| `auth-provider-core` | Core OAuth2/PKCE abstractions (runtime-agnostic) |
-| `auth-provider-lwt` | Lwt runtime adapter |
-| `auth-provider-github-v2` | GitHub OAuth |
-| `auth-provider-google-v2` | Google OAuth/OpenID Connect |
-| `auth-provider-microsoft-v2` | Microsoft/Azure AD OAuth |
+| `social-auth-core` | Core OAuth2/PKCE abstractions (runtime-agnostic) |
+| `social-auth-lwt` | Lwt runtime adapter |
+| `social-auth-github-v2` | GitHub OAuth |
+| `social-auth-google-v2` | Google OAuth/OpenID Connect |
+| `social-auth-microsoft-v2` | Microsoft/Azure AD OAuth |
 
 ## Installation
 
@@ -30,15 +30,15 @@ Add to your `dune-project`:
 ```scheme
 (pin
  (url "git+https://github.com/makerprism/ocaml-social-auth")
- (package (name auth-provider-core)))
+ (package (name social-auth-core)))
 
 (pin
  (url "git+https://github.com/makerprism/ocaml-social-auth")
- (package (name auth-provider-lwt)))
+ (package (name social-auth-lwt)))
 
 (pin
  (url "git+https://github.com/makerprism/ocaml-social-auth")
- (package (name auth-provider-github-v2)))
+ (package (name social-auth-github-v2)))
 ```
 
 Then run:
@@ -52,8 +52,8 @@ dune build
 ### Basic OAuth2 Flow with GitHub
 
 ```ocaml
-open Auth_provider_core
-open Auth_provider_github_v2
+open Social_auth_core
+open Social_auth_github_v2
 
 (* Create a GitHub provider *)
 let github = Github.create
@@ -77,7 +77,7 @@ let tokens = Github.exchange_code github
 ### With Lwt Runtime
 
 ```ocaml
-open Auth_provider_lwt
+open Social_auth_lwt
 
 let%lwt tokens = 
   Auth_lwt.exchange_code github ~code ~code_verifier ()
@@ -87,9 +87,9 @@ let%lwt tokens =
 
 The library follows a runtime-agnostic design:
 
-1. **Core** (`auth-provider-core`): Pure OCaml types and interfaces, no IO
-2. **Runtime Adapters** (`auth-provider-lwt`): Concrete implementations for specific runtimes
-3. **Providers** (`auth-provider-*-v2`): Platform-specific OAuth implementations
+1. **Core** (`social-auth-core`): Pure OCaml types and interfaces, no IO
+2. **Runtime Adapters** (`social-auth-lwt`): Concrete implementations for specific runtimes
+3. **Providers** (`social-auth-*-v2`): Platform-specific OAuth implementations
 
 This design allows you to:
 - Use the same provider logic with different async runtimes

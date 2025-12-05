@@ -34,11 +34,11 @@ Thank you for your interest in contributing!
 ```
 ocaml-social-auth/
 ├── packages/
-│   ├── auth-provider-core/      # Core abstractions
-│   ├── auth-provider-lwt/       # Lwt runtime
-│   ├── auth-provider-github-v2/ # GitHub OAuth
-│   ├── auth-provider-google-v2/ # Google OAuth
-│   └── auth-provider-microsoft-v2/ # Microsoft OAuth
+│   ├── social-auth-core/      # Core abstractions
+│   ├── social-auth-lwt/       # Lwt runtime
+│   ├── social-auth-github-v2/ # GitHub OAuth
+│   ├── social-auth-google-v2/ # Google OAuth
+│   └── social-auth-microsoft-v2/ # Microsoft OAuth
 ├── dune-project
 ├── dune-workspace
 └── Makefile
@@ -46,7 +46,7 @@ ocaml-social-auth/
 
 ## Adding a New Provider
 
-1. Create a new directory: `packages/auth-provider-<name>-v<version>/`
+1. Create a new directory: `packages/social-auth-<name>-v<version>/`
 2. Add `dune-project` with package metadata
 3. Implement the provider in `lib/`
 4. Add tests in `test/`
@@ -72,8 +72,8 @@ ocaml-social-auth/
 Releases are created by pushing tags in the format `<package>@<version>`:
 
 ```bash
-git tag auth-provider-core@0.2.0
-git push origin auth-provider-core@0.2.0
+git tag social-auth-core@0.2.0
+git push origin social-auth-core@0.2.0
 ```
 
 This triggers the release workflow automatically.

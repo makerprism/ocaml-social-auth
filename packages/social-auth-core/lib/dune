@@ -1,0 +1,15 @@
+(library
+ (name social_auth_core)
+ (public_name social-auth-core)
+ (wrapped false)
+ (modules
+  social_auth_core
+  auth_types
+  pkce
+  oauth2_flow)
+ (libraries
+  yojson
+  digestif
+  base64
+  cstruct
+  mirage-crypto-rng))

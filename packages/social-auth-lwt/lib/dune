@@ -1,0 +1,10 @@
+(library
+ (name social_auth_lwt)
+ (public_name social-auth-lwt)
+ (wrapped true)
+ (modules social_auth_lwt)
+ (libraries
+  social-auth-core
+  lwt
+  cohttp-lwt-unix
+  uri))
