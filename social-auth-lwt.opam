@@ -3,8 +3,8 @@ opam-version: "2.0"
 synopsis: "Lwt runtime adapter for social-auth-core"
 description:
   "Lwt runtime adapter for social-auth-core with Cohttp_lwt_unix HTTP client implementation. Provides a ready-to-use OAuth2 implementation for Lwt-based applications."
-maintainer: ["team@feedmansion.com"]
-authors: ["FeedMansion Team"]
+maintainer: ["sabine@makerprism.com"]
+authors: ["Sabine Schmaltz"]
 license: "MIT"
 homepage: "https://github.com/makerprism/ocaml-social-auth"
 doc: "https://github.com/makerprism/ocaml-social-auth"

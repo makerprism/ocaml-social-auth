@@ -3,8 +3,8 @@ opam-version: "2.0"
 synopsis: "Runtime-agnostic OAuth2 authentication library"
 description:
   "Runtime-agnostic, HTTP-client-agnostic OAuth2 authentication library with PKCE support. Provides core abstractions for implementing OAuth2 login flows with various providers (Google, GitHub, etc.). Can be used with any async runtime (Lwt, Eio, synchronous) and any HTTP client library. RNG is pluggable - users provide their own cryptographically secure random number generator."
-maintainer: ["team@feedmansion.com"]
-authors: ["FeedMansion Team"]
+maintainer: ["sabine@makerprism.com"]
+authors: ["Sabine Schmaltz"]
 license: "MIT"
 homepage: "https://github.com/makerprism/ocaml-social-auth"
 doc: "https://github.com/makerprism/ocaml-social-auth"

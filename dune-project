@@ -5,8 +5,8 @@
 
 (source (github makerprism/ocaml-social-auth))
 (license MIT)
-(authors "FeedMansion Team")
-(maintainers "team@feedmansion.com")
+(authors "Sabine Schmaltz")
+(maintainers "sabine@makerprism.com")
 (homepage "https://github.com/makerprism/ocaml-social-auth")
 (documentation "https://github.com/makerprism/ocaml-social-auth")
 (bug_reports "https://github.com/makerprism/ocaml-social-auth/issues")

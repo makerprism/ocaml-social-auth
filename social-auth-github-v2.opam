@@ -3,8 +3,8 @@ opam-version: "2.0"
 synopsis: "GitHub OAuth2 authentication provider"
 description:
   "GitHub OAuth2 authentication provider for social-auth-core. Implements OAuth 2.0 with PKCE for secure GitHub Sign-In. Supports retrieving user profile information including email, name, and avatar."
-maintainer: ["team@feedmansion.com"]
-authors: ["FeedMansion Team"]
+maintainer: ["sabine@makerprism.com"]
+authors: ["Sabine Schmaltz"]
 license: "MIT"
 homepage: "https://github.com/makerprism/ocaml-social-auth"
 doc: "https://github.com/makerprism/ocaml-social-auth"
