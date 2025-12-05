@@ -216,7 +216,7 @@ type provider =
 - ❌ Lwt-dependent
 - ❌ Cohttp-dependent
 - ❌ Tightly coupled to Dream web framework
-- ❌ Not reusable outside FeedMansion
+- ❌ Not reusable outside specific application
 - ✅ Works, but monolithic
 
 ### After (packages/social-auth-core)

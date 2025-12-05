@@ -238,7 +238,7 @@ social-auth-core/
 
 ## Contributing
 
-Contributions welcome! This package is maintained as part of the FeedMansion project but designed to be a standalone, reusable library.
+Contributions welcome! Please see the [contributing guide](../../CONTRIBUTING.md) for details.
 
 ## License
 
