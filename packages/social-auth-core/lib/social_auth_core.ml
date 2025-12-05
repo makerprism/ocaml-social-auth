@@ -5,11 +5,39 @@
 (** Authentication types and configurations *)
 module Auth_types = Auth_types
 
-(** PKCE (Proof Key for Code Exchange) utilities *)
+(** PKCE (Proof Key for Code Exchange) utilities - functor version *)
 module Pkce = Pkce
 
 (** OAuth2 flow implementation *)
 module Oauth2_flow = Oauth2_flow
+
+(** {1 Module Types} *)
+
+(** Random number generator interface.
+    
+    Implementations must provide cryptographically secure random bytes.
+    This is used for PKCE code verifiers and CSRF state tokens.
+    
+    Example implementation using mirage-crypto-rng:
+    {[
+      module Rng : Social_auth_core.RNG = struct
+        let generate n =
+          let cs = Mirage_crypto_rng.generate n in
+          let buf = Bytes.create n in
+          for i = 0 to n - 1 do
+            Bytes.set_uint8 buf i (Cstruct.get_uint8 cs i)
+          done;
+          buf
+      end
+    ]}
+*)
+module type RNG = Auth_types.RNG
+
+(** HTTP client interface for runtime-agnostic implementation *)
+module type HTTP_CLIENT = Oauth2_flow.HTTP_CLIENT
+
+(** PKCE module signature *)
+module type PKCE = Pkce.S
 
 (** {1 Re-exports for Convenience} *)
 
@@ -88,11 +116,6 @@ type ('ok, 'err) result = ('ok, 'err) Auth_types.result =
   | Ok of 'ok
   | Error of 'err
 
-(** {1 HTTP Client Interface} *)
-
-(** HTTP client interface for runtime-agnostic implementation *)
-module type HTTP_CLIENT = Oauth2_flow.HTTP_CLIENT
-
 (** {1 Provider Interface} *)
 
 (** Provider-specific implementation interface *)
@@ -120,6 +143,44 @@ module type PROVIDER = sig
   val parse_user_info : string -> (user_info, string) result
 end
 
+(** {1 Functors} *)
+
+(** Create a PKCE module with the given RNG implementation.
+    
+    Example:
+    {[
+      module My_rng : Social_auth_core.RNG = struct
+        let generate n = (* ... cryptographically secure bytes ... *)
+      end
+      
+      module My_pkce = Social_auth_core.Make_pkce(My_rng)
+      
+      let verifier = My_pkce.generate_code_verifier ()
+      let challenge = My_pkce.generate_code_challenge verifier
+    ]}
+*)
+module Make_pkce = Pkce.Make
+
+(** Create OAuth2 flow implementation with given HTTP client and PKCE module.
+    
+    Example:
+    {[
+      module My_rng : Social_auth_core.RNG = struct
+        let generate n = (* ... *)
+      end
+      
+      module My_pkce = Social_auth_core.Make_pkce(My_rng)
+      
+      module My_http : Social_auth_core.HTTP_CLIENT = struct
+        let post ~url ~headers ~body ~on_success ~on_error = (* ... *)
+        let get ~url ~headers ~on_success ~on_error = (* ... *)
+      end
+      
+      module Oauth2 = Social_auth_core.Make_oauth2_flow(My_http)(My_pkce)
+    ]}
+*)
+module Make_oauth2_flow = Oauth2_flow.Make
+
 (** {1 Utility Functions} *)
 
 (** Convert provider to string *)
@@ -137,19 +198,5 @@ let parse_token_response = Auth_types.parse_token_response
 (** Convert token response to JSON *)
 let token_response_to_json = Auth_types.token_response_to_json
 
-(** Generate PKCE code verifier *)
-let generate_code_verifier = Pkce.generate_code_verifier
-
-(** Generate PKCE code challenge *)
-let generate_code_challenge = Pkce.generate_code_challenge
-
-(** Generate CSRF state token *)
-let generate_state = Pkce.generate_state
-
 (** Build authorization URL *)
 let build_authorization_url = Oauth2_flow.build_authorization_url
-
-(** {1 OAuth2 Flow} *)
-
-(** Create OAuth2 flow implementation with given HTTP client *)
-module Make_oauth2_flow = Oauth2_flow.Make

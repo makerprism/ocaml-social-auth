@@ -21,7 +21,8 @@ Runtime-agnostic OAuth2 authentication library with PKCE support for OCaml.
 - ✅ Continuation-passing style (CPS) for runtime flexibility
 - ✅ Token refresh support
 - ✅ Comprehensive type safety
-- ✅ Zero runtime dependencies (only compile-time deps: yojson, digestif, base64)
+- ✅ Minimal dependencies (only yojson, digestif, base64)
+- ✅ Pluggable RNG - bring your own cryptographically secure random number generator
 
 ## Installation
 
@@ -92,10 +93,35 @@ let parse_google_user_info json_body =
     Error (Printf.sprintf "Failed to parse user info: %s" (Printexc.to_string e))
 ```
 
-### 3. Create OAuth2 Flow
+### 3. Define Your RNG
+
+The library requires a cryptographically secure RNG. Implement the `RNG` interface:
 
 ```ocaml
-module Google_oauth = Social_auth_core.Make_oauth2_flow(Lwt_http_client)
+(* Using /dev/urandom directly *)
+module Unix_rng : Social_auth_core.RNG = struct
+  let generate n =
+    let fd = Unix.openfile "/dev/urandom" [Unix.O_RDONLY] 0 in
+    let buf = Bytes.create n in
+    let _ = Unix.read fd buf 0 n in
+    Unix.close fd;
+    buf
+end
+
+(* Or use mirage-crypto-rng *)
+module Mirage_rng : Social_auth_core.RNG = struct
+  let generate n =
+    let cs = Mirage_crypto_rng.generate n in
+    (* Convert Cstruct to bytes - API varies by version *)
+    Cstruct.to_bytes cs
+end
+```
+
+### 4. Create PKCE and OAuth2 Flow Modules
+
+```ocaml
+module Pkce = Social_auth_core.Make_pkce(Unix_rng)
+module Google_oauth = Social_auth_core.Make_oauth2_flow(Lwt_http_client)(Pkce)
 
 (* Create provider config *)
 let config = {
@@ -166,6 +192,24 @@ This means you can use it with:
 2. **CSRF Protection**: State parameter validates callback authenticity
 3. **No Client Secret Required**: Pure PKCE flows work without client secrets (mobile/SPA apps)
 4. **Token Expiration**: Automatic expiration tracking
+5. **Pluggable RNG**: Users provide their own cryptographically secure RNG implementation
+
+### Pluggable RNG
+
+The library does not bundle a cryptographic RNG to minimize dependencies. Instead, you provide your own implementation of the `RNG` module type:
+
+```ocaml
+module type RNG = sig
+  val generate : int -> bytes
+end
+```
+
+This allows you to use:
+- `/dev/urandom` or `getrandom()` system calls
+- `mirage-crypto-rng` for cross-platform support
+- Any other cryptographically secure source
+
+**Note**: If you use `social-auth-lwt`, it provides a ready-to-use Unix-based RNG implementation.
 
 ## Package Structure
 

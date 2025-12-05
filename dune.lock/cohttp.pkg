@@ -1,28 +1,28 @@
-(version 4.0.0)
+(version 6.1.1)
 
 (build
  (progn
   (when
    %{pkg-self:dev}
    (run dune subst))
-  (run dune build -p %{pkg-self:name} -j %{jobs})))
+  (run dune build -p %{pkg-self:name} -j %{jobs} @install)))
 
 (depends
- ocaml
- base-bytes
  dune
+ http
+ ocaml
  re
  uri
  uri-sexp
+ logs
  sexplib0
  ppx_sexp_conv
  stringext
- base64
- jsonm)
+ base64)
 
 (source
  (fetch
   (url
-   https://github.com/mirage/ocaml-cohttp/releases/download/v4.0.0/cohttp-v4.0.0.tbz)
+   https://github.com/mirage/ocaml-cohttp/releases/download/v6.1.1/cohttp-6.1.1.tbz)
   (checksum
-   sha256=bd7aa4cd2c82744990ed7c49e3ee7a40324c64cb3d8509804809155e2bacd1d2)))
+   sha256=6b420c56203b3a0b515964f036bcea0fb9a362876b5791cd7ff50e12366c489c)))

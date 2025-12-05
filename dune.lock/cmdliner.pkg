@@ -1,9 +1,22 @@
-(version 1.3.0)
+(version 2.1.0)
 
 (install
  (progn
-  (run %{make} install LIBDIR=%{pkg-self:lib} DOCDIR=%{pkg-self:doc})
-  (run %{make} install-doc LIBDIR=%{pkg-self:lib} DOCDIR=%{pkg-self:doc})))
+  (run
+   %{make}
+   install
+   BINDIR=%{pkg-self:bin}
+   LIBDIR=%{pkg-self:lib}
+   DOCDIR=%{pkg-self:doc}
+   SHAREDIR=%{share}
+   MANDIR=%{man})
+  (run
+   %{make}
+   install-doc
+   LIBDIR=%{pkg-self:lib}
+   DOCDIR=%{pkg-self:doc}
+   SHAREDIR=%{share}
+   MANDIR=%{man})))
 
 (build
  (run %{make} all PREFIX=%{prefix}))
@@ -12,6 +25,6 @@
 
 (source
  (fetch
-  (url https://erratique.ch/software/cmdliner/releases/cmdliner-1.3.0.tbz)
+  (url https://erratique.ch/software/cmdliner/releases/cmdliner-2.1.0.tbz)
   (checksum
-   sha512=4c46bc334444ff772637deae2f5ba03645d7a1b7db523470a1246acfce79b971c764d964cbb02388639b3161b279700d9ade95da550446fb32aa4849c8a8f283)))
+   sha512=2ca8c9a2b392e031f88aa0e76f2ab50c8e9e28d77852d04ca2d5b62326630ca41567ce0832e9a9334d9b130b48deede66c7880a9d0aee75a1afe7541097e249f)))

@@ -88,8 +88,26 @@ let build_authorization_url config ~state ~code_challenge =
 
 (** {1 OAuth2 Flow Implementation} *)
 
-(** Make an OAuth2 flow implementation given an HTTP client *)
-module Make (Http : HTTP_CLIENT) = struct
+(** Make an OAuth2 flow implementation given an HTTP client and PKCE module.
+    
+    The PKCE module must be created from an RNG using [Pkce.Make].
+    
+    Example:
+    {[
+      module My_rng : Auth_types.RNG = struct
+        let generate n = (* ... cryptographically secure bytes ... *)
+      end
+      
+      module My_pkce = Pkce.Make(My_rng)
+      
+      module Http_client : HTTP_CLIENT = struct
+        (* ... *)
+      end
+      
+      module Oauth2 = Oauth2_flow.Make(Http_client)(My_pkce)
+    ]}
+*)
+module Make (Http : HTTP_CLIENT) (Pkce : Pkce.S) = struct
   
   (** Start OAuth2 authorization flow
       

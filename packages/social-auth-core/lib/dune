@@ -8,8 +8,7 @@
   pkce
   oauth2_flow)
  (libraries
+  unix
   yojson
   digestif
-  base64
-  cstruct
-  mirage-crypto-rng))
+  base64))

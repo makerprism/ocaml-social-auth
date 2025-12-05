@@ -10,6 +10,8 @@ Lwt runtime adapter for `social-auth-core` with Cohttp HTTP client.
 This package provides a ready-to-use Lwt implementation of OAuth2 authentication flows. It includes:
 
 - ✅ Cohttp_lwt_unix HTTP client implementation
+- ✅ Unix-based cryptographically secure RNG (using /dev/urandom)
+- ✅ Ready-to-use PKCE module (no need to create your own RNG)
 - ✅ Lwt-friendly promise-based API
 - ✅ Error handling with Lwt.catch
 - ✅ Drop-in replacement for CPS-style callbacks
@@ -243,6 +245,12 @@ let authenticate_user provider_type =
 ## HTTP Client
 
 The package uses `cohttp-lwt-unix` for HTTP requests. If you need a different HTTP client, you can implement the `HTTP_CLIENT` interface from `social-auth-core` directly.
+
+## RNG Implementation
+
+This package provides a Unix-based RNG implementation that reads from `/dev/urandom`, which is available on Linux, macOS, and BSD systems. The RNG is used internally by the `Pkce` module.
+
+If you need a different RNG (e.g., for Windows or cross-platform support), you can create your own using `Social_auth_core.Make_pkce` with a custom RNG implementation.
 
 ## Re-exported Types
 

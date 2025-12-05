@@ -1,5 +1,27 @@
 (** Authentication Provider Types - Core types for OAuth2 authentication *)
 
+(** {1 Random Number Generator Interface} *)
+
+(** Module type for cryptographically secure random number generation.
+    
+    Users must provide an implementation of this interface to use PKCE
+    and state generation functions. This allows the library to remain
+    runtime-agnostic and dependency-light.
+    
+    Example implementations:
+    - Using mirage-crypto-rng: [Mirage_crypto_rng.generate]
+    - Using Unix /dev/urandom: Read n bytes from /dev/urandom
+    - Using getrandom(2): System call on Linux
+*)
+module type RNG = sig
+  (** Generate [n] cryptographically secure random bytes.
+      
+      SECURITY: This function MUST return cryptographically secure
+      random bytes. Do NOT use [Random.bits] or other non-cryptographic
+      PRNGs, as this would compromise PKCE and CSRF protection. *)
+  val generate : int -> bytes
+end
+
 (** {1 Provider Types} *)
 
 (** OAuth2 provider identifier *)

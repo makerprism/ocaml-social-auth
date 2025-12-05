@@ -238,12 +238,35 @@ type provider =
 
 ## Design Principles
 
-1. **Minimal Dependencies**: Only yojson, digestif, base64
+1. **Minimal Dependencies**: Only yojson, digestif, base64, unix
 2. **Type Safety**: Explicit types, no magic strings
-3. **Security First**: PKCE by default, proper randomness
-4. **Flexibility**: Works with any runtime/HTTP client
+3. **Security First**: PKCE by default, pluggable cryptographic RNG
+4. **Flexibility**: Works with any runtime/HTTP client/RNG implementation
 5. **Standards Compliance**: RFC 6749, RFC 7636, OpenID Connect
 6. **Pragmatic**: Simple API, clear error messages
+
+## Pluggable RNG
+
+The core library does not depend on any specific cryptographic RNG implementation.
+Instead, users must provide their own RNG module implementing the `RNG` signature:
+
+```ocaml
+module type RNG = sig
+  val generate : int -> bytes
+end
+```
+
+This design allows:
+- Zero dependency on mirage-crypto-rng or other crypto libraries in core
+- Users can use whatever RNG fits their runtime (mirage-crypto-rng, /dev/urandom, etc.)
+- Ready-to-use implementations provided by runtime adapters (e.g., social-auth-lwt)
+
+Example usage with social-auth-lwt (which provides a Unix /dev/urandom based RNG):
+```ocaml
+(* social-auth-lwt provides Pkce module ready to use *)
+let verifier = Social_auth_lwt.generate_code_verifier ()
+let challenge = Social_auth_lwt.generate_code_challenge verifier
+```
 
 ## Influences
 

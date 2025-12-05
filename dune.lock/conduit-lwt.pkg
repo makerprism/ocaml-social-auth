@@ -1,4 +1,4 @@
-(version 2.1.0)
+(version 8.0.0)
 
 (build
  (progn
@@ -7,11 +7,11 @@
    (run dune subst))
   (run dune build -p %{pkg-self:name} -j %{jobs})))
 
-(depends ocaml dune base-unix ppx_sexp_conv sexplib conduit lwt)
+(depends ocaml dune base-unix ppx_sexp_conv sexplib0 conduit lwt)
 
 (source
  (fetch
   (url
-   https://github.com/mirage/ocaml-conduit/releases/download/v2.1.0/conduit-v2.1.0.tbz)
+   https://github.com/mirage/ocaml-conduit/releases/download/v8.0.0/conduit-8.0.0.tbz)
   (checksum
-   sha256=7b4dd1faca7ed4dc77c1b5d765fca9053209dcfcb2c379d666a19314d8f77e72)))
+   sha256=0a63d910865b5473893a170cda51f61388f488ecf4c4b2ed7fe9ec4e2cf66f61)))

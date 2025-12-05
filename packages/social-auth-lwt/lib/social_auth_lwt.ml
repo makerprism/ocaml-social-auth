@@ -3,6 +3,46 @@
 open Lwt.Syntax
 open Social_auth_core
 
+(** {1 Random Number Generator} *)
+
+(** Unix-based cryptographically secure RNG using /dev/urandom.
+    
+    This implementation reads from /dev/urandom which is available
+    on Linux, macOS, and BSD systems. It provides cryptographically
+    secure random bytes suitable for PKCE and CSRF tokens.
+*)
+module Rng : RNG = struct
+  let urandom_fd = ref None
+  
+  let get_urandom_fd () =
+    match !urandom_fd with
+    | Some fd -> fd
+    | None ->
+      let fd = Unix.openfile "/dev/urandom" [Unix.O_RDONLY] 0 in
+      urandom_fd := Some fd;
+      fd
+  
+  let generate n =
+    let fd = get_urandom_fd () in
+    let buf = Bytes.create n in
+    let rec read_all offset remaining =
+      if remaining > 0 then begin
+        let bytes_read = Unix.read fd buf offset remaining in
+        if bytes_read = 0 then
+          failwith "Failed to read from /dev/urandom"
+        else
+          read_all (offset + bytes_read) (remaining - bytes_read)
+      end
+    in
+    read_all 0 n;
+    buf
+end
+
+(** {1 PKCE Module} *)
+
+(** Ready-to-use PKCE implementation using Unix /dev/urandom *)
+module Pkce = Social_auth_core.Make_pkce(Rng)
+
 (** {1 HTTP Client Implementation} *)
 
 (** Cohttp_lwt_unix HTTP client for social-auth-core *)
@@ -77,7 +117,18 @@ end
 (** {1 OAuth2 Flow with Lwt} *)
 
 (** OAuth2 flow implementation using Lwt and Cohttp *)
-module Oauth2 = Make_oauth2_flow(Http_client)
+module Oauth2 = Make_oauth2_flow(Http_client)(Pkce)
+
+(** {1 Convenience Functions} *)
+
+(** Generate PKCE code verifier *)
+let generate_code_verifier = Pkce.generate_code_verifier
+
+(** Generate PKCE code challenge from verifier *)
+let generate_code_challenge = Pkce.generate_code_challenge
+
+(** Generate CSRF state token *)
+let generate_state = Pkce.generate_state
 
 (** {1 Lwt-friendly Wrappers} *)
 

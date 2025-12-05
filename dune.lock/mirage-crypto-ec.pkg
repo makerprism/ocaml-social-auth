@@ -7,7 +7,7 @@
    (run dune subst))
   (run dune build -p %{pkg-self:name} -j %{jobs})))
 
-(depends ocaml dune dune-configurator duration logs mirage-crypto digestif)
+(depends dune ocaml dune-configurator eqaf mirage-crypto-rng digestif)
 
 (source
  (fetch
