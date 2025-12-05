@@ -1,12 +1,13 @@
 (lang dune 3.17)
 (name ocaml-social-auth)
 
-(generate_opam_files false)
+(generate_opam_files true)
 
 (source (github makerprism/ocaml-social-auth))
 (license MIT)
 (authors "FeedMansion Team")
 (maintainers "team@feedmansion.com")
+(homepage "https://github.com/makerprism/ocaml-social-auth")
 (documentation "https://github.com/makerprism/ocaml-social-auth")
 (bug_reports "https://github.com/makerprism/ocaml-social-auth/issues")
 
