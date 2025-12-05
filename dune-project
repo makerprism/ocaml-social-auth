@@ -21,8 +21,7 @@
   yojson
   digestif
   base64
-  cstruct
-  mirage-crypto-rng))
+   (mirage-crypto-rng (>= 2.0.0))))
 
 (package
  (name social-auth-lwt)
