@@ -20,7 +20,6 @@
   yojson
   digestif
   base64
-  cstruct
   mirage-crypto-rng))
 
 (package
