@@ -2,6 +2,11 @@
 
 Microsoft/Azure AD OAuth2 authentication provider for `auth-provider-core`.
 
+> **Warning**
+> This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
+>
+> **Current status:** This provider has not been tested yet and should be considered experimental.
+
 ## Overview
 
 Supports both:

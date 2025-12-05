@@ -2,6 +2,9 @@
 
 Lwt runtime adapter for `auth-provider-core` with Cohttp HTTP client.
 
+> **Warning**
+> This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
+
 ## Overview
 
 This package provides a ready-to-use Lwt implementation of OAuth2 authentication flows. It includes:

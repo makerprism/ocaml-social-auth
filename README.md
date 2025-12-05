@@ -4,6 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OCaml](https://img.shields.io/badge/OCaml-%3E%3D4.14-orange)](https://ocaml.org/)
 
+> **Warning**
+> These libraries are **not production-ready**. They were primarily built using LLMs and are still a work in progress. We are actively working towards making them stable and usable.
+>
+> **Current status:** Only Google OAuth login has been used successfully in an app we are developing. Other providers (GitHub, Microsoft) should be considered experimental.
+
 Runtime-agnostic OAuth 2.0 authentication libraries for OCaml. Supports GitHub, Google, Microsoft/Azure AD with PKCE. Works with any HTTP client and async runtime (Lwt, Eio).
 
 ## Packages

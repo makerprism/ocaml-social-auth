@@ -2,6 +2,11 @@
 
 Google OAuth2 authentication provider for `auth-provider-core`.
 
+> **Warning**
+> This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
+>
+> **Current status:** Google OAuth login has been used successfully in an app we are developing.
+
 ## Overview
 
 This package provides Google-specific OAuth2 configuration and user info parsing for use with `auth-provider-core`. It implements:

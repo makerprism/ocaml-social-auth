@@ -2,6 +2,11 @@
 
 GitHub OAuth2 authentication provider for `auth-provider-core`.
 
+> **Warning**
+> This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
+>
+> **Current status:** This provider has not been tested yet and should be considered experimental.
+
 ## Overview
 
 This package provides GitHub-specific OAuth2 configuration and user info parsing for use with `auth-provider-core`. It implements:

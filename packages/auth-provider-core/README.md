@@ -2,6 +2,9 @@
 
 Runtime-agnostic OAuth2 authentication library with PKCE support for OCaml.
 
+> **Warning**
+> This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
+
 ## Overview
 
 `auth-provider-core` provides a clean, runtime-agnostic interface for implementing OAuth2 authentication flows. It supports:
