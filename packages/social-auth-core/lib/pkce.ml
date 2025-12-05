@@ -14,7 +14,7 @@ let generate_random_string length =
   let chars_len = String.length unreserved_chars in
   let random_bytes = Mirage_crypto_rng.generate length in
   String.init length (fun i -> 
-    let byte = Char.code (String.get random_bytes i) in
+    let byte = Cstruct.get_uint8 random_bytes i in
     String.get unreserved_chars (byte mod chars_len))
 
 (** {1 PKCE Code Verifier and Challenge} *)
