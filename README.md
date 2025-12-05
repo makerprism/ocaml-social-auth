@@ -1,5 +1,9 @@
 # ocaml-social-auth
 
+[![CI](https://github.com/makerprism/ocaml-social-auth/actions/workflows/ci.yml/badge.svg)](https://github.com/makerprism/ocaml-social-auth/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![OCaml](https://img.shields.io/badge/OCaml-%3E%3D4.14-orange)](https://ocaml.org/)
+
 Runtime-agnostic OAuth 2.0 authentication libraries for OCaml. Supports GitHub, Google, Microsoft/Azure AD with PKCE. Works with any HTTP client and async runtime (Lwt, Eio).
 
 ## Packages
