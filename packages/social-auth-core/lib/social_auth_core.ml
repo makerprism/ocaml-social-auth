@@ -11,6 +11,9 @@ module Pkce = Pkce
 (** OAuth2 flow implementation *)
 module Oauth2_flow = Oauth2_flow
 
+(** ID Token (JWT) validation for OpenID Connect *)
+module Id_token = Id_token
+
 (** {1 Module Types} *)
 
 (** Random number generator interface.
@@ -200,3 +203,92 @@ let token_response_to_json = Auth_types.token_response_to_json
 
 (** Build authorization URL *)
 let build_authorization_url = Oauth2_flow.build_authorization_url
+
+(** {1 ID Token Validation} *)
+
+(** ID token claims from OpenID Connect *)
+type id_token_claims = Id_token.id_token_claims = {
+  iss : string;
+  sub : string;
+  aud : string list;
+  exp : int;
+  iat : int;
+  nonce : string option;
+  auth_time : int option;
+  azp : string option;
+  at_hash : string option;
+  email : string option;
+  email_verified : bool option;
+  name : string option;
+  picture : string option;
+  given_name : string option;
+  family_name : string option;
+  locale : string option;
+}
+
+(** ID token validation configuration *)
+type id_token_validation_config = Id_token.validation_config = {
+  issuer : string;
+  client_id : string;
+  clock_skew_seconds : int;
+  require_nonce : bool;
+  expected_nonce : string option;
+}
+
+(** ID token validation errors *)
+type id_token_validation_error = Id_token.validation_error =
+  | Invalid_format of string
+  | Invalid_base64 of string
+  | Invalid_json of string
+  | Missing_claim of string
+  | Invalid_issuer of { expected : string; actual : string }
+  | Invalid_audience of { expected : string; actual : string list }
+  | Token_expired of { exp : int; now : int }
+  | Token_not_yet_valid of { iat : int; now : int }
+  | Invalid_nonce of { expected : string; actual : string option }
+  | Missing_nonce
+  | Signature_verification_not_implemented
+  | Algorithm_not_supported of string
+
+(** Indicates how an ID token was obtained.
+    
+    For tokens received directly from the provider's token endpoint over HTTPS,
+    signature verification is redundant - TLS already authenticates the source.
+    
+    For tokens from untrusted sources (browser, mobile app), you need signature
+    verification using an external JWT library with JWKS support.
+*)
+type id_token_source = Id_token.token_source =
+  | Direct_from_token_endpoint
+  | From_untrusted_source
+
+(** Validate an ID token and extract claims.
+    
+    For the standard server-side OAuth2 flow where tokens are received
+    directly from the provider's token endpoint over HTTPS, this provides
+    complete validation. TLS authenticates the token source, making
+    signature verification redundant.
+    
+    See {!Id_token} module documentation for the full security model.
+*)
+let validate_id_token = Id_token.validate_id_token
+
+(** Validate an ID token with explicit source indication.
+    
+    Use this when you want to be explicit about the security model.
+    Tokens from untrusted sources will be rejected with an error
+    message directing you to use an external JWT library.
+*)
+let validate_id_token_from_source = Id_token.validate_id_token_from_source
+
+(** Create validation config for Google OIDC *)
+let google_id_token_config = Id_token.google_validation_config
+
+(** Create validation config for Microsoft OIDC *)
+let microsoft_id_token_config = Id_token.microsoft_validation_config
+
+(** Convert validation error to string *)
+let id_token_error_to_string = Id_token.validation_error_to_string
+
+(** Extract user info from validated ID token claims *)
+let user_info_from_id_token = Id_token.user_info_from_claims

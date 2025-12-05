@@ -86,6 +86,31 @@ let build_authorization_url config ~state ~code_challenge =
   in
   Printf.sprintf "%s?%s" config.auth_endpoint query_string
 
+(** {1 Error Sanitization} *)
+
+(** Sanitize error response body to prevent token/secret leakage in logs.
+    
+    OAuth error responses may contain sensitive information like tokens,
+    client secrets, or detailed error messages that shouldn't be logged.
+    This function extracts only safe error information.
+    
+    @param body Raw response body
+    @return Sanitized error message
+*)
+let sanitize_error_body body =
+  try
+    let open Yojson.Basic.Util in
+    let json = Yojson.Basic.from_string body in
+    (* Extract standard OAuth2 error fields only *)
+    let error = try json |> member "error" |> to_string with _ -> "unknown_error" in
+    let error_desc = try Some (json |> member "error_description" |> to_string) with _ -> None in
+    match error_desc with
+    | Some desc -> Printf.sprintf "%s: %s" error desc
+    | None -> error
+  with _ ->
+    (* If not JSON or parsing fails, return generic message *)
+    "request failed (details omitted for security)"
+
 (** {1 OAuth2 Flow Implementation} *)
 
 (** Make an OAuth2 flow implementation given an HTTP client and PKCE module.
@@ -171,13 +196,14 @@ module Make (Http : HTTP_CLIENT) (Pkce : Pkce.S) = struct
       ~headers
       ~body:body_str
       ~on_success:(fun response ->
-        if response.status = 200 then
+        if response.status >= 200 && response.status < 300 then
           match Yojson.Basic.from_string response.body |> parse_token_response with
           | Ok token -> on_success token
           | Error err -> on_error err
         else
+          (* Sanitize error response to prevent token/secret leakage in logs *)
           on_error (Printf.sprintf "Token exchange failed with status %d: %s" 
-                     response.status response.body)
+                     response.status (sanitize_error_body response.body))
       )
       ~on_error
   
@@ -218,13 +244,14 @@ module Make (Http : HTTP_CLIENT) (Pkce : Pkce.S) = struct
       ~headers
       ~body:body_str
       ~on_success:(fun response ->
-        if response.status = 200 then
+        if response.status >= 200 && response.status < 300 then
           match Yojson.Basic.from_string response.body |> parse_token_response with
           | Ok token -> on_success token
           | Error err -> on_error err
         else
+          (* Sanitize error response to prevent token/secret leakage in logs *)
           on_error (Printf.sprintf "Token refresh failed with status %d: %s" 
-                     response.status response.body)
+                     response.status (sanitize_error_body response.body))
       )
       ~on_error
   
@@ -246,13 +273,14 @@ module Make (Http : HTTP_CLIENT) (Pkce : Pkce.S) = struct
       ~url:config.user_info_endpoint
       ~headers
       ~on_success:(fun response ->
-        if response.status = 200 then
+        if response.status >= 200 && response.status < 300 then
           match parse_user_info response.body with
           | Ok user_info -> on_success user_info
           | Error err -> on_error err
         else
+          (* Sanitize error response to prevent sensitive data leakage in logs *)
           on_error (Printf.sprintf "User info request failed with status %d: %s" 
-                     response.status response.body)
+                     response.status (sanitize_error_body response.body))
       )
       ~on_error
   

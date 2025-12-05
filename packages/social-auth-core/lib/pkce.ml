@@ -59,13 +59,36 @@ module Make (Rng : Auth_types.RNG) : S = struct
       
       SECURITY: Uses the provided RNG for cryptographic randomness.
       This is critical for PKCE security - predictable code_verifiers would
-      allow attackers to bypass PKCE protection entirely. *)
+      allow attackers to bypass PKCE protection entirely.
+      
+      Uses rejection sampling to avoid modulo bias. With 66 characters in the
+      alphabet and 256 possible byte values, naive modulo would create a ~1.5%
+      bias toward the first 58 characters. Rejection sampling ensures uniform
+      distribution by rejecting bytes >= 252 (largest multiple of 66 <= 256). *)
   let generate_random_string length =
     let chars_len = String.length unreserved_chars in
-    let random_bytes = Rng.generate length in
-    String.init length (fun i -> 
-      let byte = Bytes.get_uint8 random_bytes i in
-      String.get unreserved_chars (byte mod chars_len))
+    (* Find largest multiple of chars_len that fits in a byte *)
+    let max_valid = (256 / chars_len) * chars_len in
+    let result = Bytes.create length in
+    let pos = ref 0 in
+    (* Generate more bytes than needed to minimize RNG calls with rejection *)
+    while !pos < length do
+      (* Request extra bytes to account for rejections (~3% rejection rate) *)
+      let needed = length - !pos in
+      let to_generate = needed + (needed / 16) + 8 in
+      let random_bytes = Rng.generate to_generate in
+      for i = 0 to Bytes.length random_bytes - 1 do
+        if !pos < length then begin
+          let byte = Bytes.get_uint8 random_bytes i in
+          (* Rejection sampling: only accept bytes < max_valid *)
+          if byte < max_valid then begin
+            Bytes.set result !pos (String.get unreserved_chars (byte mod chars_len));
+            incr pos
+          end
+        end
+      done
+    done;
+    Bytes.to_string result
 
   let generate_code_verifier () =
     generate_random_string 128
