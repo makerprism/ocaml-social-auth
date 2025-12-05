@@ -15,7 +15,8 @@ depends: [
   "yojson"
   "digestif"
   "base64"
-  "mirage-crypto-rng" {>= "2.0.0"}
+  "cstruct"
+  "mirage-crypto-rng" {< "1.0.0"}
   "odoc" {with-doc}
 ]
 build: [

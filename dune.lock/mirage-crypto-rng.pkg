@@ -1,4 +1,4 @@
-(version 2.0.2)
+(version 0.8.0)
 
 (build
  (progn
@@ -7,11 +7,20 @@
    (run dune subst))
   (run dune build -p %{pkg-self:name} -j %{jobs})))
 
-(depends ocaml dune dune-configurator duration logs mirage-crypto digestif)
+(depends
+ ocaml
+ dune
+ dune-configurator
+ duration
+ cstruct
+ logs
+ mirage-crypto
+ mtime
+ lwt)
 
 (source
  (fetch
   (url
-   https://github.com/mirage/mirage-crypto/releases/download/v2.0.2/mirage-crypto-2.0.2.tbz)
+   https://github.com/mirage/mirage-crypto/releases/download/v0.8.0/mirage-crypto-v0.8.0.tbz)
   (checksum
-   sha256=739a9d39f34027fbc93557f87c5cac4190a52bddadff72f212faa803d6215874)))
+   sha256=30e65722b932523eeb5cf6ee3956e101980c687c2a1b83763ae19fb0874862f1)))

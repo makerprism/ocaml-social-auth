@@ -1,4 +1,4 @@
-(version 8.0.0)
+(version 2.2.2)
 
 (build
  (progn
@@ -11,18 +11,16 @@
  ocaml
  dune
  base-unix
- logs
  ppx_sexp_conv
  conduit-lwt
  lwt
  uri
  ipaddr
- ipaddr-sexp
- ca-certs)
+ ipaddr-sexp)
 
 (source
  (fetch
   (url
-   https://github.com/mirage/ocaml-conduit/releases/download/v8.0.0/conduit-8.0.0.tbz)
+   https://github.com/mirage/ocaml-conduit/releases/download/v2.2.2/conduit-v2.2.2.tbz)
   (checksum
-   sha256=0a63d910865b5473893a170cda51f61388f488ecf4c4b2ed7fe9ec4e2cf66f61)))
+   sha256=a57cc1843aa7eaaa183a5d08d98a13e78c848b37aabb7b55ee88257c051f68fd)))

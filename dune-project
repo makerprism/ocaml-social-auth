@@ -22,7 +22,7 @@
   digestif
   base64
   cstruct
-  mirage-crypto-rng))
+  (mirage-crypto-rng (< 1.0.0))))
 
 (package
  (name social-auth-lwt)
