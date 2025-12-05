@@ -1,0 +1,14 @@
+(library
+ (name auth_provider_core)
+ (public_name auth-provider-core)
+ (wrapped false)
+ (modules
+  auth_provider_core
+  auth_types
+  pkce
+  oauth2_flow)
+ (libraries
+  yojson
+  digestif
+  base64
+  mirage-crypto-rng))

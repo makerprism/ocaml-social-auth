@@ -1,0 +1,10 @@
+(library
+ (name auth_provider_lwt)
+ (public_name auth-provider-lwt)
+ (wrapped true)
+ (modules auth_provider_lwt)
+ (libraries
+  auth-provider-core
+  lwt
+  cohttp-lwt-unix
+  uri))

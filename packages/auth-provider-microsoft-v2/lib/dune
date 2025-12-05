@@ -1,0 +1,8 @@
+(library
+ (name auth_provider_microsoft_v2)
+ (public_name auth-provider-microsoft-v2)
+ (wrapped true)
+ (modules auth_provider_microsoft_v2)
+ (libraries
+  auth-provider-core
+  yojson))
