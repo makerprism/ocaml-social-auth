@@ -20,12 +20,15 @@ jobs:
           - macos-latest
 
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
       - name: Install system dependencies (Linux)
         run: sudo apt update && sudo apt-get install -y libev-dev libgmp-dev pkg-config
         if: runner.os == 'Linux'
 
       - name: Install system dependencies (macOS)
-        run: brew update && brew install libev gmp pkg-config
+        run: brew install libev gmp pkg-config
         if: runner.os == 'macOS'
 
       - name: Setup Dune
@@ -33,8 +36,8 @@ jobs:
         with:
           version: latest
 
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - name: Lock dependencies
+        run: dune pkg lock
 
       - name: Build project
         run: dune build
