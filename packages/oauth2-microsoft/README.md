@@ -1,6 +1,6 @@
-# social-auth-microsoft-v2
+# oauth2-microsoft
 
-Microsoft/Azure AD OAuth2 authentication provider for `social-auth-core`.
+Microsoft/Azure AD OAuth2 provider for `oauth2-client`.
 
 > **Warning**
 > This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
@@ -10,15 +10,15 @@ Microsoft/Azure AD OAuth2 authentication provider for `social-auth-core`.
 ## Overview
 
 Supports both:
-- ✅ Personal Microsoft Accounts (Outlook, Xbox, etc.)
-- ✅ Azure AD Work/School Accounts
-- ✅ OpenID Connect with ID tokens
-- ✅ Microsoft Graph API integration
+- Personal Microsoft Accounts (Outlook, Xbox, etc.)
+- Azure AD Work/School Accounts
+- OpenID Connect with ID tokens
+- Microsoft Graph API integration
 
 ## Installation
 
 ```bash
-opam install social-auth-microsoft-v2
+opam install oauth2-microsoft
 ```
 
 ## Quick Start
@@ -32,26 +32,26 @@ opam install social-auth-microsoft-v2
 5. Under "Certificates & secrets", create a client secret
 6. Copy Application (client) ID and client secret
 
-### 2. Use with social-auth-core
+### 2. Use with oauth2-client
 
 ```ocaml
 (* Create Microsoft config *)
-let microsoft_config = Social_auth_microsoft_v2.make_config
+let microsoft_config = Oauth2_microsoft.make_config
   ~client_id:"your-application-id"
   ~client_secret:"your-client-secret"
   ~redirect_uri:"https://yourapp.com/auth/microsoft/callback"
   ()
 
-(* Use with social-auth-lwt *)
+(* Use with oauth2-client-lwt *)
 let (oauth_state, auth_url) = 
-  Social_auth_lwt.start_authorization_flow microsoft_config
+  Oauth2_client_lwt.start_authorization_flow microsoft_config
 
 (* Handle callback *)
-let* result = Social_auth_lwt.complete_oauth_flow
+let* result = Oauth2_client_lwt.complete_oauth_flow
   microsoft_config
   ~code
   ~code_verifier:oauth_state.code_verifier
-  ~parse_user_info:Social_auth_microsoft_v2.parse_user_info
+  ~parse_user_info:Oauth2_microsoft.parse_user_info
 ```
 
 ## Configuration Options
@@ -61,7 +61,7 @@ let* result = Social_auth_lwt.complete_oauth_flow
 Allows both personal and work accounts:
 
 ```ocaml
-let config = Social_auth_microsoft_v2.make_config
+let config = Oauth2_microsoft.make_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."
@@ -71,7 +71,7 @@ let config = Social_auth_microsoft_v2.make_config
 ### Work/School Accounts Only
 
 ```ocaml
-let config = Social_auth_microsoft_v2.make_organizations_config
+let config = Oauth2_microsoft.make_organizations_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."
@@ -81,7 +81,7 @@ let config = Social_auth_microsoft_v2.make_organizations_config
 ### Personal Accounts Only
 
 ```ocaml
-let config = Social_auth_microsoft_v2.make_consumers_config
+let config = Oauth2_microsoft.make_consumers_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."
@@ -91,7 +91,7 @@ let config = Social_auth_microsoft_v2.make_consumers_config
 ### Specific Tenant
 
 ```ocaml
-let config = Social_auth_microsoft_v2.make_tenant_config
+let config = Oauth2_microsoft.make_tenant_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."

@@ -1,13 +1,13 @@
-# social-auth-core
+# oauth2-client
 
-Runtime-agnostic OAuth2 authentication library with PKCE support for OCaml.
+Runtime-agnostic OAuth2 client library with PKCE support for OCaml.
 
 > **Warning**
 > This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
 
 ## Overview
 
-`social-auth-core` provides a clean, runtime-agnostic interface for implementing OAuth2 authentication flows. It supports:
+`oauth2-client` provides a clean, runtime-agnostic interface for implementing OAuth2 authentication flows. It supports:
 
 - **OAuth 2.0 with PKCE** (Proof Key for Code Exchange) for maximum security
 - **Runtime-agnostic**: Works with Lwt, Eio, or synchronous code
@@ -17,17 +17,17 @@ Runtime-agnostic OAuth2 authentication library with PKCE support for OCaml.
 
 ## Key Features
 
-- ✅ PKCE support (RFC 7636) for secure authorization code flow
-- ✅ Continuation-passing style (CPS) for runtime flexibility
-- ✅ Token refresh support
-- ✅ Comprehensive type safety
-- ✅ Minimal dependencies (only yojson, digestif, base64)
-- ✅ Pluggable RNG - bring your own cryptographically secure random number generator
+- PKCE support (RFC 7636) for secure authorization code flow
+- Continuation-passing style (CPS) for runtime flexibility
+- Token refresh support
+- Comprehensive type safety
+- Minimal dependencies (only yojson, digestif, base64)
+- Pluggable RNG - bring your own cryptographically secure random number generator
 
 ## Installation
 
 ```bash
-opam install social-auth-core
+opam install oauth2-client
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ opam install social-auth-core
 First, implement the `HTTP_CLIENT` interface for your runtime:
 
 ```ocaml
-module Lwt_http_client : Social_auth_core.HTTP_CLIENT = struct
+module Lwt_http_client : Oauth2_client.HTTP_CLIENT = struct
   open Lwt.Syntax
   
   let post ~url ~headers ~body ~on_success ~on_error =
@@ -53,7 +53,7 @@ module Lwt_http_client : Social_auth_core.HTTP_CLIENT = struct
       let* body_str = Cohttp_lwt.Body.to_string body in
       let status = Response.status resp |> Code.code_of_status in
       let response = {
-        Social_auth_core.status;
+        Oauth2_client.status;
         headers = Header.to_list (Response.headers resp);
         body = body_str;
       } in
@@ -75,7 +75,7 @@ let parse_google_user_info json_body =
   try
     let open Yojson.Basic.Util in
     let json = Yojson.Basic.from_string json_body in
-    let user_info = Social_auth_core.{
+    let user_info = Oauth2_client.{
       provider = Google;
       provider_user_id = json |> member "id" |> to_string;
       email = json |> member "email" |> to_string_option;
@@ -99,7 +99,7 @@ The library requires a cryptographically secure RNG. Implement the `RNG` interfa
 
 ```ocaml
 (* Using /dev/urandom directly *)
-module Unix_rng : Social_auth_core.RNG = struct
+module Unix_rng : Oauth2_client.RNG = struct
   let generate n =
     let fd = Unix.openfile "/dev/urandom" [Unix.O_RDONLY] 0 in
     let buf = Bytes.create n in
@@ -109,7 +109,7 @@ module Unix_rng : Social_auth_core.RNG = struct
 end
 
 (* Or use mirage-crypto-rng *)
-module Mirage_rng : Social_auth_core.RNG = struct
+module Mirage_rng : Oauth2_client.RNG = struct
   let generate n =
     let cs = Mirage_crypto_rng.generate n in
     (* Convert Cstruct to bytes - API varies by version *)
@@ -120,12 +120,12 @@ end
 ### 4. Create PKCE and OAuth2 Flow Modules
 
 ```ocaml
-module Pkce = Social_auth_core.Make_pkce(Unix_rng)
-module Google_oauth = Social_auth_core.Make_oauth2_flow(Lwt_http_client)(Pkce)
+module Pkce = Oauth2_client.Make_pkce(Unix_rng)
+module Google_oauth = Oauth2_client.Make_oauth2_flow(Lwt_http_client)(Pkce)
 
 (* Create provider config *)
 let config = {
-  Social_auth_core.
+  Oauth2_client.
   client_id = "your-client-id";
   client_secret = Some "your-client-secret";
   redirect_uri = "https://yourapp.com/auth/callback";
@@ -209,32 +209,33 @@ This allows you to use:
 - `mirage-crypto-rng` for cross-platform support
 - Any other cryptographically secure source
 
-**Note**: If you use `social-auth-lwt`, it provides a ready-to-use Unix-based RNG implementation.
+**Note**: If you use `oauth2-client-lwt`, it provides a ready-to-use Unix-based RNG implementation.
 
 ## Package Structure
 
 ```
-social-auth-core/
+oauth2-client/
 ├── lib/
 │   ├── auth_types.ml          # Core type definitions
 │   ├── pkce.ml                # PKCE implementation (RFC 7636)
 │   ├── oauth2_flow.ml         # OAuth2 flow logic
-│   └── social_auth_core.ml  # Main module
+│   └── oauth2_client.ml       # Main module
 ├── dune-project
 └── README.md
 ```
 
 ## Related Packages
 
-- `social-auth-lwt` - Lwt runtime adapter (coming soon)
-- `social-auth-google-v2` - Google OAuth provider (coming soon)
-- `social-auth-github-v2` - GitHub OAuth provider (coming soon)
+- `oauth2-client-lwt` - Lwt runtime adapter
+- `oauth2-google` - Google OAuth provider
+- `oauth2-github` - GitHub OAuth provider
+- `oauth2-microsoft` - Microsoft/Azure AD OAuth provider
 
 ## Standards Compliance
 
-- ✅ [RFC 6749](https://tools.ietf.org/html/rfc6749) - OAuth 2.0 Authorization Framework
-- ✅ [RFC 7636](https://tools.ietf.org/html/rfc7636) - PKCE
-- ✅ [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
+- [RFC 6749](https://tools.ietf.org/html/rfc6749) - OAuth 2.0 Authorization Framework
+- [RFC 7636](https://tools.ietf.org/html/rfc7636) - PKCE
+- [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 
 ## Contributing
 

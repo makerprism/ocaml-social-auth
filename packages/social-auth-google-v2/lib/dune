@@ -1,8 +1,0 @@
-(library
- (name social_auth_google_v2)
- (public_name social-auth-google-v2)
- (wrapped true)
- (modules social_auth_google_v2)
- (libraries
-  social-auth-core
-  yojson))

@@ -1,6 +1,6 @@
-# social-auth-lwt
+# oauth2-client-lwt
 
-Lwt runtime adapter for `social-auth-core` with Cohttp HTTP client.
+Lwt runtime adapter for `oauth2-client` with Cohttp HTTP client.
 
 > **Warning**
 > This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
@@ -9,28 +9,28 @@ Lwt runtime adapter for `social-auth-core` with Cohttp HTTP client.
 
 This package provides a ready-to-use Lwt implementation of OAuth2 authentication flows. It includes:
 
-- ✅ Cohttp_lwt_unix HTTP client implementation
-- ✅ Unix-based cryptographically secure RNG (using /dev/urandom)
-- ✅ Ready-to-use PKCE module (no need to create your own RNG)
-- ✅ Lwt-friendly promise-based API
-- ✅ Error handling with Lwt.catch
-- ✅ Drop-in replacement for CPS-style callbacks
+- Cohttp_lwt_unix HTTP client implementation
+- Unix-based cryptographically secure RNG (using /dev/urandom)
+- Ready-to-use PKCE module (no need to create your own RNG)
+- Lwt-friendly promise-based API
+- Error handling with Lwt.catch
+- Drop-in replacement for CPS-style callbacks
 
 ## Installation
 
 ```bash
-opam install social-auth-lwt social-auth-google-v2
+opam install oauth2-client-lwt oauth2-google
 ```
 
 ## Quick Start
 
 ```ocaml
 open Lwt.Syntax
-open Social_auth_lwt
+open Oauth2_client_lwt
 
 let authenticate_with_google () =
   (* Create Google config *)
-  let config = Social_auth_google_v2.make_config
+  let config = Oauth2_google.make_config
     ~client_id:"your-client-id"
     ~client_secret:"your-client-secret"
     ~redirect_uri:"https://yourapp.com/callback"
@@ -53,7 +53,7 @@ let authenticate_with_google () =
     config
     ~code
     ~code_verifier:oauth_state.code_verifier
-    ~parse_user_info:Social_auth_google_v2.parse_user_info
+    ~parse_user_info:Oauth2_google.parse_user_info
   in
   
   match result with
@@ -135,7 +135,7 @@ Fetch user information using access token.
 ```ocaml
 open Lwt.Syntax
 
-let google_config = Social_auth_google_v2.make_config
+let google_config = Oauth2_google.make_config
   ~client_id:(Sys.getenv "GOOGLE_CLIENT_ID")
   ~client_secret:(Sys.getenv "GOOGLE_CLIENT_SECRET")
   ~redirect_uri:"http://localhost:8080/auth/google/callback"
@@ -143,7 +143,7 @@ let google_config = Social_auth_google_v2.make_config
 
 (* Start OAuth flow *)
 let google_login_handler _req =
-  let (oauth_state, auth_url) = Social_auth_lwt.start_authorization_flow google_config in
+  let (oauth_state, auth_url) = Oauth2_client_lwt.start_authorization_flow google_config in
   
   (* Store oauth_state in session *)
   (* In real app: store in database or encrypted cookie *)
@@ -165,11 +165,11 @@ let google_callback_handler req =
           let parts = String.split_on_char '|' stored in
           (match parts with
           | [stored_state; code_verifier] when stored_state = state ->
-              let* result = Social_auth_lwt.complete_oauth_flow
+              let* result = Oauth2_client_lwt.complete_oauth_flow
                 google_config
                 ~code
                 ~code_verifier
-                ~parse_user_info:Social_auth_google_v2.parse_user_info
+                ~parse_user_info:Oauth2_google.parse_user_info
               in
               (match result with
               | Ok (token, user_info) ->
@@ -202,7 +202,7 @@ let () =
 All functions return `result Lwt.t` for explicit error handling:
 
 ```ocaml
-let* result = Social_auth_lwt.exchange_code_for_tokens config ~code ~code_verifier in
+let* result = Oauth2_client_lwt.exchange_code_for_tokens config ~code ~code_verifier in
 match result with
 | Ok token ->
     (* Success *)
@@ -220,13 +220,13 @@ match result with
 let authenticate_user provider_type =
   let config = match provider_type with
     | `Google ->
-        Social_auth_google_v2.make_config
+        Oauth2_google.make_config
           ~client_id:(Sys.getenv "GOOGLE_CLIENT_ID")
           ~client_secret:(Sys.getenv "GOOGLE_CLIENT_SECRET")
           ~redirect_uri:"http://localhost:8080/callback"
           ()
     | `GitHub ->
-        Social_auth_github_v2.make_config  (* Future package *)
+        Oauth2_github.make_config
           ~client_id:(Sys.getenv "GITHUB_CLIENT_ID")
           ~client_secret:(Sys.getenv "GITHUB_CLIENT_SECRET")
           ~redirect_uri:"http://localhost:8080/callback"
@@ -234,30 +234,30 @@ let authenticate_user provider_type =
   in
   
   let parse_user_info = match provider_type with
-    | `Google -> Social_auth_google_v2.parse_user_info
-    | `GitHub -> Social_auth_github_v2.parse_user_info
+    | `Google -> Oauth2_google.parse_user_info
+    | `GitHub -> Oauth2_github.parse_user_info
   in
   
-  let (oauth_state, auth_url) = Social_auth_lwt.start_authorization_flow config in
+  let (oauth_state, auth_url) = Oauth2_client_lwt.start_authorization_flow config in
   (* ... rest of flow *)
 ```
 
 ## HTTP Client
 
-The package uses `cohttp-lwt-unix` for HTTP requests. If you need a different HTTP client, you can implement the `HTTP_CLIENT` interface from `social-auth-core` directly.
+The package uses `cohttp-lwt-unix` for HTTP requests. If you need a different HTTP client, you can implement the `HTTP_CLIENT` interface from `oauth2-client` directly.
 
 ## RNG Implementation
 
 This package provides a Unix-based RNG implementation that reads from `/dev/urandom`, which is available on Linux, macOS, and BSD systems. The RNG is used internally by the `Pkce` module.
 
-If you need a different RNG (e.g., for Windows or cross-platform support), you can create your own using `Social_auth_core.Make_pkce` with a custom RNG implementation.
+If you need a different RNG (e.g., for Windows or cross-platform support), you can create your own using `Oauth2_client.Make_pkce` with a custom RNG implementation.
 
 ## Re-exported Types
 
 For convenience, all core types are re-exported in the `Types` module:
 
 ```ocaml
-open Social_auth_lwt.Types
+open Oauth2_client_lwt.Types
 
 let user : user_info = ...
 let token : token_response = ...

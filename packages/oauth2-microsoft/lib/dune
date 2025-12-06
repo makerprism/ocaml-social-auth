@@ -1,0 +1,8 @@
+(library
+ (name oauth2_microsoft)
+ (public_name oauth2-microsoft)
+ (wrapped true)
+ (modules oauth2_microsoft)
+ (libraries
+  oauth2-client
+  yojson))

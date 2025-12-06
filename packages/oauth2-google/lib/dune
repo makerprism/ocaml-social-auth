@@ -1,0 +1,8 @@
+(library
+ (name oauth2_google)
+ (public_name oauth2-google)
+ (wrapped true)
+ (modules oauth2_google)
+ (libraries
+  oauth2-client
+  yojson))

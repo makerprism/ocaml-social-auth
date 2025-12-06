@@ -1,6 +1,6 @@
-# social-auth-github-v2
+# oauth2-github
 
-GitHub OAuth2 authentication provider for `social-auth-core`.
+GitHub OAuth2 provider for `oauth2-client`.
 
 > **Warning**
 > This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
@@ -9,17 +9,17 @@ GitHub OAuth2 authentication provider for `social-auth-core`.
 
 ## Overview
 
-This package provides GitHub-specific OAuth2 configuration and user info parsing for use with `social-auth-core`. It implements:
+This package provides GitHub-specific OAuth2 configuration and user info parsing for use with `oauth2-client`. It implements:
 
-- ✅ GitHub OAuth 2.0 with PKCE
-- ✅ User profile retrieval
-- ✅ Email and username access
-- ✅ Proper GitHub API v3 integration
+- GitHub OAuth 2.0 with PKCE
+- User profile retrieval
+- Email and username access
+- Proper GitHub API v3 integration
 
 ## Installation
 
 ```bash
-opam install social-auth-github-v2
+opam install oauth2-github
 ```
 
 ## Quick Start
@@ -32,18 +32,18 @@ opam install social-auth-github-v2
 4. Set Authorization callback URL (e.g., `https://yourapp.com/auth/github/callback`)
 5. Copy Client ID and Client Secret
 
-### 2. Use with social-auth-core
+### 2. Use with oauth2-client
 
 ```ocaml
 (* Create GitHub config *)
-let github_config = Social_auth_github_v2.make_config
+let github_config = Oauth2_github.make_config
   ~client_id:"your-github-client-id"
   ~client_secret:"your-github-client-secret"
   ~redirect_uri:"https://yourapp.com/auth/github/callback"
   ()
 
 (* Create OAuth flow with your HTTP client *)
-module GitHub_auth = Social_auth_core.Make_oauth2_flow(Your_http_client)
+module GitHub_auth = Oauth2_client.Make_oauth2_flow(Your_http_client)
 
 (* Start authorization *)
 let (oauth_state, auth_url) = GitHub_auth.start_authorization_flow github_config
@@ -59,7 +59,7 @@ let handle_github_callback ~code ~state =
     github_config
     ~code
     ~code_verifier:oauth_state.code_verifier
-    ~parse_user_info:Social_auth_github_v2.parse_user_info
+    ~parse_user_info:Oauth2_github.parse_user_info
     ~on_success:(fun (token_response, user_info) ->
       (* User authenticated! *)
       Printf.printf "User: %s\n" (Option.value user_info.username ~default:"no username");
@@ -81,7 +81,7 @@ By default, the provider requests:
 ### Custom Scopes
 
 ```ocaml
-let config = Social_auth_github_v2.make_config
+let config = Oauth2_github.make_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."
@@ -153,11 +153,11 @@ Example response from `/user/emails`:
 ```ocaml
 open Lwt.Syntax
 
-(* Define HTTP client - see social-auth-lwt for complete implementation *)
-module GitHub_auth = Social_auth_lwt
+(* Define HTTP client - see oauth2-client-lwt for complete implementation *)
+module GitHub_auth = Oauth2_client_lwt
 
 let authenticate () =
-  let config = Social_auth_github_v2.make_config
+  let config = Oauth2_github.make_config
     ~client_id:(Sys.getenv "GITHUB_CLIENT_ID")
     ~client_secret:(Sys.getenv "GITHUB_CLIENT_SECRET")
     ~redirect_uri:"http://localhost:8080/auth/github/callback"
@@ -178,12 +178,12 @@ let authenticate () =
     config
     ~code
     ~code_verifier:oauth_state.code_verifier
-    ~parse_user_info:Social_auth_github_v2.parse_user_info
+    ~parse_user_info:Oauth2_github.parse_user_info
   in
   
   match result with
   | Ok (token, user_info) ->
-      Printf.printf "✓ Authenticated!\n";
+      Printf.printf "Authenticated!\n";
       Printf.printf "  Username: %s\n" 
         (Option.value user_info.username ~default:"no username");
       Printf.printf "  GitHub ID: %s\n" user_info.provider_user_id;
@@ -193,7 +193,7 @@ let authenticate () =
         (String.sub token.access_token 0 10);
       Lwt.return_unit
   | Error err ->
-      Printf.eprintf "✗ Auth failed: %s\n" err;
+      Printf.eprintf "Auth failed: %s\n" err;
       Lwt.return_unit
 ```
 
@@ -208,7 +208,7 @@ val make_config :
   redirect_uri:string ->
   ?scopes:string list ->
   unit ->
-  Social_auth_core.provider_config
+  Oauth2_client.provider_config
 ```
 
 Create GitHub OAuth2 configuration.
@@ -218,7 +218,7 @@ Create GitHub OAuth2 configuration.
 ```ocaml
 val parse_user_info : 
   string -> 
-  (Social_auth_core.user_info, string) result
+  (Oauth2_client.user_info, string) result
 ```
 
 Parse GitHub user info JSON response.

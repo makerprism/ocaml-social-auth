@@ -1,4 +1,4 @@
-(** Social Auth Core - Runtime-agnostic OAuth2 authentication library *)
+(** OAuth2 Client - Runtime-agnostic OAuth2 client library *)
 
 (** {1 Core Modules} *)
 
@@ -23,7 +23,7 @@ module Id_token = Id_token
     
     Example implementation using mirage-crypto-rng:
     {[
-      module Rng : Social_auth_core.RNG = struct
+      module Rng : Oauth2_client.RNG = struct
         let generate n =
           let cs = Mirage_crypto_rng.generate n in
           let buf = Bytes.create n in
@@ -152,11 +152,11 @@ end
     
     Example:
     {[
-      module My_rng : Social_auth_core.RNG = struct
+      module My_rng : Oauth2_client.RNG = struct
         let generate n = (* ... cryptographically secure bytes ... *)
       end
       
-      module My_pkce = Social_auth_core.Make_pkce(My_rng)
+      module My_pkce = Oauth2_client.Make_pkce(My_rng)
       
       let verifier = My_pkce.generate_code_verifier ()
       let challenge = My_pkce.generate_code_challenge verifier
@@ -168,18 +168,18 @@ module Make_pkce = Pkce.Make
     
     Example:
     {[
-      module My_rng : Social_auth_core.RNG = struct
+      module My_rng : Oauth2_client.RNG = struct
         let generate n = (* ... *)
       end
       
-      module My_pkce = Social_auth_core.Make_pkce(My_rng)
+      module My_pkce = Oauth2_client.Make_pkce(My_rng)
       
-      module My_http : Social_auth_core.HTTP_CLIENT = struct
+      module My_http : Oauth2_client.HTTP_CLIENT = struct
         let post ~url ~headers ~body ~on_success ~on_error = (* ... *)
         let get ~url ~headers ~on_success ~on_error = (* ... *)
       end
       
-      module Oauth2 = Social_auth_core.Make_oauth2_flow(My_http)(My_pkce)
+      module Oauth2 = Oauth2_client.Make_oauth2_flow(My_http)(My_pkce)
     ]}
 *)
 module Make_oauth2_flow = Oauth2_flow.Make

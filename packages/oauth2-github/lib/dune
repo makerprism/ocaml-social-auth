@@ -1,0 +1,8 @@
+(library
+ (name oauth2_github)
+ (public_name oauth2-github)
+ (wrapped true)
+ (modules oauth2_github)
+ (libraries
+  oauth2-client
+  yojson))

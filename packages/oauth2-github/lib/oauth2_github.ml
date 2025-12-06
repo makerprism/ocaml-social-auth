@@ -1,6 +1,6 @@
-(** GitHub OAuth2 Authentication Provider *)
+(** GitHub OAuth2 Provider *)
 
-open Social_auth_core
+open Oauth2_client
 
 (** {1 GitHub OAuth 2.0 Configuration} *)
 
@@ -23,7 +23,7 @@ let default_scopes = [
     @param client_secret GitHub OAuth App client secret
     @param redirect_uri OAuth2 redirect URI (must match GitHub App settings)
     @param scopes Optional custom scopes (defaults to read:user + user:email)
-    @return Provider configuration for use with social-auth-core
+    @return Provider configuration for use with oauth2-client
 *)
 let make_config 
     ~client_id 

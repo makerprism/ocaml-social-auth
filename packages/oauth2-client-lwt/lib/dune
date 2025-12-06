@@ -1,0 +1,10 @@
+(library
+ (name oauth2_client_lwt)
+ (public_name oauth2-client-lwt)
+ (wrapped true)
+ (modules oauth2_client_lwt)
+ (libraries
+  oauth2-client
+  lwt
+  cohttp-lwt-unix
+  uri))

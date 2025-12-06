@@ -1,6 +1,6 @@
-(** Microsoft/Azure AD OAuth2 Authentication Provider *)
+(** Microsoft/Azure AD OAuth2 Provider *)
 
-open Social_auth_core
+open Oauth2_client
 
 (** {1 Microsoft Identity Platform Configuration} *)
 
@@ -26,7 +26,7 @@ let default_scopes = [
     @param redirect_uri OAuth2 redirect URI (must match App registration)
     @param scopes Optional custom scopes (defaults to openid + profile + email + User.Read)
     @param tenant Optional tenant ID (defaults to "common" for multi-tenant)
-    @return Provider configuration for use with social-auth-core
+    @return Provider configuration for use with oauth2-client
     
     Tenant options:
     - "common" - Personal Microsoft accounts + Work/School accounts (default)

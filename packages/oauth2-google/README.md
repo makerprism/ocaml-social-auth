@@ -1,6 +1,6 @@
-# social-auth-google-v2
+# oauth2-google
 
-Google OAuth2 authentication provider for `social-auth-core`.
+Google OAuth2 provider for `oauth2-client`.
 
 > **Warning**
 > This library is **not production-ready**. It was primarily built using LLMs and is still a work in progress. We are actively working towards making it stable and usable.
@@ -9,17 +9,17 @@ Google OAuth2 authentication provider for `social-auth-core`.
 
 ## Overview
 
-This package provides Google-specific OAuth2 configuration and user info parsing for use with `social-auth-core`. It implements:
+This package provides Google-specific OAuth2 configuration and user info parsing for use with `oauth2-client`. It implements:
 
-- ✅ Google OAuth 2.0 with PKCE
-- ✅ OpenID Connect support
-- ✅ Email and profile scope handling
-- ✅ Proper Google userinfo v2 API parsing
+- Google OAuth 2.0 with PKCE
+- OpenID Connect support
+- Email and profile scope handling
+- Proper Google userinfo v2 API parsing
 
 ## Installation
 
 ```bash
-opam install social-auth-google-v2
+opam install oauth2-google
 ```
 
 ## Quick Start
@@ -34,18 +34,18 @@ opam install social-auth-google-v2
 6. Add authorized redirect URI (e.g., `https://yourapp.com/auth/google/callback`)
 7. Copy Client ID and Client Secret
 
-### 2. Use with social-auth-core
+### 2. Use with oauth2-client
 
 ```ocaml
 (* Create Google config *)
-let google_config = Social_auth_google_v2.make_config
+let google_config = Oauth2_google.make_config
   ~client_id:"your-client-id.apps.googleusercontent.com"
   ~client_secret:"your-client-secret"
   ~redirect_uri:"https://yourapp.com/auth/google/callback"
   ()
 
 (* Create OAuth flow with your HTTP client *)
-module Google_auth = Social_auth_core.Make_oauth2_flow(Your_http_client)
+module Google_auth = Oauth2_client.Make_oauth2_flow(Your_http_client)
 
 (* Start authorization *)
 let (oauth_state, auth_url) = Google_auth.start_authorization_flow google_config
@@ -61,7 +61,7 @@ let handle_google_callback ~code ~state =
     google_config
     ~code
     ~code_verifier:oauth_state.code_verifier
-    ~parse_user_info:Social_auth_google_v2.parse_user_info
+    ~parse_user_info:Oauth2_google.parse_user_info
     ~on_success:(fun (token_response, user_info) ->
       (* User authenticated! *)
       Printf.printf "User: %s\n" (Option.value user_info.email ~default:"no email");
@@ -84,7 +84,7 @@ By default, the provider requests:
 ### Custom Scopes
 
 ```ocaml
-let config = Social_auth_google_v2.make_config
+let config = Oauth2_google.make_config
   ~client_id:"..."
   ~client_secret:"..."
   ~redirect_uri:"..."
@@ -104,7 +104,7 @@ To get a refresh token, modify the config:
 
 ```ocaml
 let google_config = 
-  let base_config = Social_auth_google_v2.make_config
+  let base_config = Oauth2_google.make_config
     ~client_id:"..."
     ~client_secret:"..."
     ~redirect_uri:"..."
@@ -155,7 +155,7 @@ module Lwt_http_client = struct
       in
       let* body_str = Cohttp_lwt.Body.to_string body in
       let status = Response.status resp |> Code.code_of_status in
-      let response = Social_auth_core.{
+      let response = Oauth2_client.{
         status;
         headers = Header.to_list (Response.headers resp);
         body = body_str;
@@ -175,7 +175,7 @@ module Lwt_http_client = struct
       in
       let* body_str = Cohttp_lwt.Body.to_string body in
       let status = Response.status resp |> Code.code_of_status in
-      let response = Social_auth_core.{
+      let response = Oauth2_client.{
         status;
         headers = Header.to_list (Response.headers resp);
         body = body_str;
@@ -185,10 +185,10 @@ module Lwt_http_client = struct
     )
 end
 
-module Google_auth = Social_auth_core.Make_oauth2_flow(Lwt_http_client)
+module Google_auth = Oauth2_client.Make_oauth2_flow(Lwt_http_client)
 
 let authenticate () =
-  let config = Social_auth_google_v2.make_config
+  let config = Oauth2_google.make_config
     ~client_id:(Sys.getenv "GOOGLE_CLIENT_ID")
     ~client_secret:(Sys.getenv "GOOGLE_CLIENT_SECRET")
     ~redirect_uri:"http://localhost:8080/auth/google/callback"
@@ -209,7 +209,7 @@ let authenticate () =
     config
     ~code
     ~code_verifier:oauth_state.code_verifier
-    ~parse_user_info:Social_auth_google_v2.parse_user_info
+    ~parse_user_info:Oauth2_google.parse_user_info
     ~on_success:(fun (token, user) ->
       Lwt.wakeup resolver (Ok (token, user))
     )
@@ -231,7 +231,7 @@ val make_config :
   redirect_uri:string ->
   ?scopes:string list ->
   unit ->
-  Social_auth_core.provider_config
+  Oauth2_client.provider_config
 ```
 
 Create Google OAuth2 configuration.
@@ -241,7 +241,7 @@ Create Google OAuth2 configuration.
 ```ocaml
 val parse_user_info : 
   string -> 
-  (Social_auth_core.user_info, string) result
+  (Oauth2_client.user_info, string) result
 ```
 
 Parse Google userinfo JSON response.

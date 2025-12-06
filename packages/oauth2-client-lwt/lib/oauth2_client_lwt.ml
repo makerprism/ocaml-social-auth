@@ -1,7 +1,7 @@
-(** Lwt Runtime Adapter for social-auth-core *)
+(** Lwt Runtime Adapter for oauth2-client *)
 
 open Lwt.Syntax
-open Social_auth_core
+open Oauth2_client
 
 (** {1 Random Number Generator} *)
 
@@ -41,11 +41,11 @@ end
 (** {1 PKCE Module} *)
 
 (** Ready-to-use PKCE implementation using Unix /dev/urandom *)
-module Pkce = Social_auth_core.Make_pkce(Rng)
+module Pkce = Oauth2_client.Make_pkce(Rng)
 
 (** {1 HTTP Client Implementation} *)
 
-(** Cohttp_lwt_unix HTTP client for social-auth-core *)
+(** Cohttp_lwt_unix HTTP client for oauth2-client *)
 module Http_client : HTTP_CLIENT = struct
   
   (** Make a POST request using Cohttp_lwt_unix *)
@@ -207,13 +207,13 @@ let complete_oauth_flow config ~code ~code_verifier ~parse_user_info =
 
 (** Re-export core types for convenience *)
 module Types = struct
-  type provider = Social_auth_core.provider =
+  type provider = Oauth2_client.provider =
     | Google
     | GitHub
     | Microsoft
     | Custom of string
 
-  type token_response = Social_auth_core.token_response = {
+  type token_response = Oauth2_client.token_response = {
     access_token : string;
     token_type : string;
     expires_in : int option;
@@ -222,7 +222,7 @@ module Types = struct
     id_token : string option;
   }
 
-  type user_info = Social_auth_core.user_info = {
+  type user_info = Oauth2_client.user_info = {
     provider : provider;
     provider_user_id : string;
     email : string option;
@@ -236,7 +236,7 @@ module Types = struct
     raw_response : Yojson.Basic.t;
   }
 
-  type oauth_state = Social_auth_core.oauth_state = {
+  type oauth_state = Oauth2_client.oauth_state = {
     state : string;
     code_verifier : string;
     provider : provider;
@@ -246,7 +246,7 @@ module Types = struct
     custom_data : string option;
   }
 
-  type provider_config = Social_auth_core.provider_config = {
+  type provider_config = Oauth2_client.provider_config = {
     provider : provider;
     client_id : string;
     client_secret : string option;
